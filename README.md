@@ -1,15 +1,20 @@
 # **NS3-HelperScripts**
-These scripts are written to make the processes of running ns3 scripts and debugging them much easier.
+These scripts are written to make the processes of running `ns3` scripts and debugging them much easier. I created this because I have multiple `ns3` programs under my `scratch` directory and I always have to remember how to write the name of the program correctly.
+
+The scripts work by finding the latest modified file under all directories under `scratch` to use the name of the directory, which is the name of the `ns3` program.
+
+So, if there's a directory under `scratch` named `MyWirelessUDPEchoExample`, it would be run like this:
+``` bash
+./waf --run MyWirelessUDPEchoExample
+```
+However, if a file under that directory was the latest modified file under the `scratch` directory, then I can run it using the `run_ns3.py` program that I included here.
+
 
 ## **Pre-requisite**
 ----------------
-* You need to create an environment variable for ns3's root directory from which you run the **waf** tool.
+* You need to create an environment variable for `ns3`'s root directory from which you run the `waf` tool.
 
-    For example if ns3 root directory is 
-    ```bash 
-    /home/adil/NS3Work
-    ```
-    Then you should add to Inline `.bashrc` the following line:
+    For example if `ns3` root directory is `/home/adil/NS3Work`, then you should add to Inline `.bashrc` the following line:
     ```bash
     export $NS3_ROOT_DIR=/home/adil/NS3Work
     ```
@@ -25,7 +30,8 @@ These scripts are written to make the processes of running ns3 scripts and debug
 
 * You have to have `Python 2.6` installed. I didn't test these with `Python 3`
 
-## **Helper scripts**
+
+## **Helper Scripts Tutorial**
 ----
 ### **run_ns3.py**
  * when you call this program, it will run the latest modified ns3 program under `$NS3_HOME_DIR/scratch`
@@ -62,3 +68,7 @@ These scripts are written to make the processes of running ns3 scripts and debug
     alias rv='~/scripts/vis_ns3.py'
     ```
 * You can also pass command-line arguments to the `ns3` program just like in `run_ns3.py` example.
+
+## **Questions and Corrections?**
+-----
+If you have questions, or corrections, or suggestion, contact me at `aalsuha@g.clemson.edu` or `addola@gmail.com` if I am no longer with Clemson University. 

@@ -14,7 +14,7 @@ from MyColor import MyColor
 try:
     from termcolor import colored
     no_color = False
-except ImportError, e:
+except ImportError:
     no_color = True
     pass # module doesn't exist, deal with it.
 

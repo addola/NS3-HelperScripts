@@ -1,5 +1,7 @@
 # **NS3-HelperScripts**
-These scripts are written to make the processes of running `ns3` scripts and debugging them much easier. I created this because I have multiple `ns3` programs under my `scratch` directory and I always have to remember how to write the name of the program correctly.
+These scripts are written to make the processes of running `ns3` scripts and debugging them much easier. They properly format the `./waf` command-string for passing arguments, using a debugger and `PyViz`. 
+
+I created this because I have multiple `ns3` programs under my `scratch` directory and I always have to remember how to write the name of the program correctly, or how do I run my `ns3` program in a debugger.
 
 The scripts work by finding the latest modified file under all directories under `scratch` to use the name of the directory, which is the name of the `ns3` program.
 
@@ -14,14 +16,16 @@ However, if a file under that directory was the latest modified file under the `
 ----------------
 * These Python scripts were tested with Python 2.7 & 3.6 on Ubuntu 14 to Ubuntu 18 & Mac OS from High Sierra and later.
 
-* When I first designed this, you needed to to create an environment variable called `$NS3_ROOT_DIR` so that the scripts would only run if your current working directory is `ns3`'s root directory from which you run the `waf` tool.
+* When I first designed this, you needed to to create an environment variable called `$NS3_ROOT_DIR` so that the scripts would only run if your current working directory is `ns3`'s root directory from which you run the `waf` tool. *However*, I updated the scripts so that it checks if your current directory is an `ns3` root directory by checking for the presence of certain files and folders.
 
-    I did this by adding this line to `./bashrc` on Ubuntu, or `./bash_profile` on Mac OS. I also add a navigational alias to easily navigate to my `ns3` directory.
+    To create environment variables, or add aliases edit the file`./bashrc` on Ubuntu, or `./bash_profile` on Mac OS. I defined an environment variable and aliases for my `ns3` directory as follows: navigate to my `ns3` directory.
     ```bash
     export $NS3_ROOT_DIR=/home/adil/NS3Work
     alias gons='cd $NS3_ROOT_DIR'
     ```
-*  Under the directory `$NS3_ROOT_DIR/scratch` you must only have directories for every project you're working on. Let us say I have `Project1`, `Project2`, and `Project3`, then content of `scratch` would look like this:
+*  Under the directory `$NS3_ROOT_DIR/scratch` you *must* only have directories for every project you're working on. The reason for this is the way I designed the code that checks for the latest modified project. It is a file called `sort_dir.py`, and it checks all files in the directory under `scratch` and returns the directory name containing the latest modified project. 
+
+    Let us say I have `Project1`, `Project2`, and `Project3`, then content of `scratch` would look like this:
     ```bash
     ./scratch/
             Project1/
@@ -34,7 +38,7 @@ However, if a file under that directory was the latest modified file under the `
                 project3-main.cc
     ```
 
-* These scripts are written in Python in multiple `.py` files. Place all those `.py` files in one directory. On my computer, I created a directory called `~/UnixScripts` for all my helper scripts.
+* The helper scripts are written in Python in multiple `.py` files. Place all those `.py` files in one directory. On my computer, I created a directory called `~/UnixScripts` for all my helper scripts.
 
 * Additionally, you may create aliases for each of the scripts. I work mainly with three script files, so I created three aliases
     ```bash
@@ -65,10 +69,10 @@ However, if a file under that directory was the latest modified file under the `
     ```bash
     alias r='~/scripts/run_ns3'
     ```
-    - This allows me to run the latest modified project under `scratch` simply by typing `r`. You can choose any alias you want for this.
-    ```bash
-    r
-    ``` 
+    - This allows me to run the latest modified project under `scratch` simply by typing `r` to run the latest modified `ns3` program without parameters. You can choose any alias you want for this.
+        ```bash
+        r
+        ``` 
 * You can also pass command-line argument to your `ns3` program. You need to create command-line arguments in your `ns3` program using `ns3::CommandLine` interface method. 
 
     Say you have two arguments to pass, `n=10` and `t=60` then you run it as follows:
@@ -79,10 +83,11 @@ However, if a file under that directory was the latest modified file under the `
     ```bash 
    r --n=10 --t=60  
     ```
-    If the latest modified project is named `Project2`, then this runs the command 
+    If the latest modified project is named `Project2`, then using the scripts that way actually runs the command: 
     ```bash
     ./waf --run "Project2 --n=10 --t=60"
     ```
+    As you can see, the script gives us a more compact way to write the `run` commands.
 ### **`debug_ns3.py`**
 * This will run the latest modified `ns3` program under `scratch` directory with a debugger.
 

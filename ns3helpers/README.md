@@ -12,8 +12,8 @@ So, if there's a directory under `scratch` named `MyWirelessUDPEchoExample`, it 
 However, if a file under that directory was the latest modified file under the `scratch` directory, then I can run it using the `run_ns3.py` program that I included here.
 
 
-## **Pre-requisite**
-----------------
+## **Prerequisites**
+--------------------
 * These Python scripts were tested with Python 2.7 & 3.6 on Ubuntu 14 to Ubuntu 18 & Mac OS from High Sierra and later.
 
 * When I first designed this, you needed to to create an environment variable called `$NS3_ROOT_DIR` so that the scripts would only run if your current working directory is `ns3`'s root directory from which you run the `waf` tool. *However*, I updated the scripts so that it checks if your current directory is an `ns3` root directory by checking for the presence of certain files and folders.

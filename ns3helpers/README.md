@@ -9,11 +9,15 @@ So, if there's a directory under `scratch` named `MyWirelessUDPEchoExample`, it 
 ``` bash
 ./waf --run MyWirelessUDPEchoExample
 ```
-However, if a file under that directory was the latest modified file under the `scratch` directory, then I can run it using the `run_ns3.py` program that I included here.
+I written a script in `run_ns3.py`, in which I can run the latest modified project under `scratch` directory. First, I need to make sure I am in the `ns3` root directory (that's the one from which we run `./waf` commands), then use the full path name tothe `run_ns3.py` script. For example if `run_ns3.py` is stored in `~/UnixScripts/run_ns3.py`, then I run
+``` bash
+~/UnixScripts/run_ns3.py
+```
+Notice that I didn't need to specify the project name. My script looks for the latest modified project under `scratch`
 
 
-## **Pre-requisite**
-----------------
+## **Prerequisites**
+--------------------
 * These Python scripts were tested with Python 2.7 & 3.6 on Ubuntu 14 to Ubuntu 18 & Mac OS from High Sierra and later.
 
 * When I first designed this, you needed to to create an environment variable called `$NS3_ROOT_DIR` so that the scripts would only run if your current working directory is `ns3`'s root directory from which you run the `waf` tool. *However*, I updated the scripts so that it checks if your current directory is an `ns3` root directory by checking for the presence of certain files and folders.
@@ -54,6 +58,7 @@ However, if a file under that directory was the latest modified file under the `
 ----
 ### **`run_ns3.py`**
  * when you call this program, it will run the latest modified ns3 program under `$NS3_HOME_DIR/scratch`
+ * To run this script, you need to be in the `ns3` root directory, and you must use the full-path name to the `run_ns3.py` file.
  * This program uses `sort_dir.py` to find the most recently modified program.
     - The command used to check the latest modified project on Ubuntu is different than the one used on Mac OS. The `sort_dir.py` scripts checks which operating system are you running, and use the proper command.
  * If you stored this file at a directory called `~/UnixScripts`, you will call it by running

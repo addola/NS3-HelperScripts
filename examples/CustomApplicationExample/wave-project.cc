@@ -15,7 +15,7 @@ int main (int argc, char *argv[])
 
   //Number of nodes
   uint32_t nNodes = 5;
-  double simTime = 4; //4 seconds
+  double simTime = 60; //4 seconds
   double interval = 0.1;
   bool enablePcap = false;
   cmd.AddValue ("t","Simulation Time", simTime);
@@ -27,6 +27,7 @@ int main (int argc, char *argv[])
   NodeContainer nodes;
   nodes.Create(nNodes);
 
+  //LogComponentEnable ("CustomApplication", LOG_LEVEL_FUNCTION);
   /*
     You must setup Mobility. Any mobility will work. Use one suitable for your work
   */
@@ -36,6 +37,8 @@ int main (int argc, char *argv[])
   for (uint32_t i=0 ; i<nodes.GetN(); i++)
   {
     //set initial positions, and velocities
+    NS_LOG_LOGIC ("Setting up mobility for node " << i);
+    NS_LOG_ERROR ("An error happened :(");
     Ptr<ConstantVelocityMobilityModel> cvmm = DynamicCast<ConstantVelocityMobilityModel> (nodes.Get(i)->GetObject<MobilityModel>());
     cvmm->SetPosition ( Vector (20+i*5, 20+(i%2)*5, 0));
     cvmm->SetVelocity ( Vector (10+((i+1)%2)*5,0,0) );
@@ -57,25 +60,29 @@ int main (int argc, char *argv[])
     nodes.Get(i)->AddApplication (app_i);
   }
   */
- 
-
   
+  //Method 2 using ObjcetFactor. 
   for (uint32_t i=0 ; i<nodes.GetN() ; i++)
   {
     ObjectFactory fact;
     fact.SetTypeId ("ns3::CustomApplication");
-    fact.Set ("Interval", TimeValue (MilliSeconds(10)));
-    Ptr<Application> appI = fact.Create <Application> ();
+    fact.Set ("Interval", TimeValue (MilliSeconds(100)));
+    Ptr<CustomApplication> appI = fact.Create <CustomApplication> ();
     appI->SetStartTime(Seconds(0));
     appI->SetStopTime (Seconds (0));
     nodes.Get(i)->AddApplication(appI);
   }
-  
-  //Now the nodes are ready with WaveNetDevice object attach to all of them, let's install applications
- 
+   
 
   Simulator::Stop(Seconds(simTime));
   Simulator::Run();
+  std::cout << "Post Simulation: " << std::endl;
+  for (uint32_t i=0 ; i<nodes.GetN(); i++)
+  {
+    Ptr<CustomApplication> appI = DynamicCast<CustomApplication> (nodes.Get(i)->GetApplication(0));
+    appI->PrintNeighbors ();
+  }
+
   Simulator::Destroy();
 
 }

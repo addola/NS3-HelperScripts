@@ -32,6 +32,7 @@ CustomApplication::CustomApplication()
 {
     m_broadcast_time = MilliSeconds (100); //every 100ms
     m_packetSize = 1000; //1000 bytes
+    m_time_limit = Seconds (5);
 }
 CustomApplication::~CustomApplication()
 {
@@ -72,14 +73,17 @@ CustomApplication::StartApplication()
     else
     {
         NS_FATAL_ERROR ("There's no WaveNetDevice in your node");
-    }  
+    }
+    //We will periodically (every 1 second) check the list of neighbors, and remove old ones (older than 5 seconds)
+    Simulator::Schedule (Seconds (1), &CustomApplication::RemoveOldNeighbors, this);
+      
 }
 void 
 CustomApplication::SetBroadcastInterval (Time interval)
 {
+    NS_LOG_FUNCTION (this << interval);
     m_broadcast_time = interval;
 }
-
 void
 CustomApplication::BroadcastInformation()
 {
@@ -117,13 +121,13 @@ CustomApplication::ReceivePacket (Ptr<NetDevice> device, Ptr<const Packet> packe
         Packets received here only have Application data, no WifiMacHeader. 
         We created packets with 1000 bytes payload, so we'll get 1000 bytes of payload.
     */
-    NS_LOG_UNCOND ("ReceivePacket() : Node " << GetNode()->GetId() << " : Received a packet from " << sender << " Size:" << packet->GetSize());
+    NS_LOG_INFO ("ReceivePacket() : Node " << GetNode()->GetId() << " : Received a packet from " << sender << " Size:" << packet->GetSize());
     
     //Let's check if packet has a tag attached!
     CustomDataTag tag;
     if (packet->PeekPacketTag (tag))
     {
-        NS_LOG_UNCOND ("\tFrom Node Id: " << tag.GetNodeId() << " at " << tag.GetPosition() 
+        NS_LOG_INFO ("\tFrom Node Id: " << tag.GetNodeId() << " at " << tag.GetPosition() 
                         << "\tPacket Timestamp: " << tag.GetTimestamp() << " delay="<< Now()-tag.GetTimestamp());
     }
 
@@ -137,7 +141,7 @@ CustomApplication::PromiscRx (Ptr<const Packet> packet, uint16_t channelFreq, Wi
         Packets received here have MAC headers and payload.
         If packets are created with 1000 bytes payload, the size here is about 38 bytes larger. 
     */
-    NS_LOG_UNCOND ("PromiscRx() : Node " << GetNode()->GetId() << " : ChannelFreq: " << channelFreq << " Mode: " << tx.GetMode()
+    NS_LOG_DEBUG ("PromiscRx() : Node " << GetNode()->GetId() << " : ChannelFreq: " << channelFreq << " Mode: " << tx.GetMode()
                  << " Signal: " << sn.signal << " Noise: " << sn.noise << " Size: " << packet->GetSize());    
     WifiMacHeader hdr;
     if (packet->PeekHeader (hdr))
@@ -145,11 +149,14 @@ CustomApplication::PromiscRx (Ptr<const Packet> packet, uint16_t channelFreq, Wi
         //Let's see if this packet is intended to this node
         Mac48Address destination = hdr.GetAddr1();
         Mac48Address source = hdr.GetAddr2();
+
+        UpdateNeighbor (source);
+
         Mac48Address myMacAddress = m_waveDevice->GetMac(CCH)->GetAddress();
         //A packet is intened to me if it targets my MAC address, or it's a broadcast message
         if ( destination==Mac48Address::GetBroadcast() || destination==myMacAddress)
         {
-            NS_LOG_UNCOND ("\tFrom: " << source << "\n\tSeq. No. " << hdr.GetSequenceNumber() );
+            NS_LOG_DEBUG ("\tFrom: " << source << "\n\tSeq. No. " << hdr.GetSequenceNumber() );
             //Do something for this type of packets
         }
         else //Well, this packet is not intended for me
@@ -158,5 +165,58 @@ CustomApplication::PromiscRx (Ptr<const Packet> packet, uint16_t channelFreq, Wi
         }    
     }
 }
+
+void CustomApplication::UpdateNeighbor (Mac48Address addr)
+{
+    bool found = false;
+    //Go over all neighbors, find one matching the address, and updates its 'last_beacon' time.
+    for (std::vector<NeighborInformation>::iterator it = m_neighbors.begin(); it != m_neighbors.end(); it++ )
+    {
+        if (it->neighbor_mac == addr)
+        {
+            it->last_beacon = Now();
+            found = true;
+            break;
+        }
+    }
+    if (!found) //If no node with this address exist, add a new table entry
+    {
+        NeighborInformation new_n;
+        new_n.neighbor_mac = addr;
+        new_n.last_beacon = Now ();
+        m_neighbors.push_back (new_n);
+    }
+}
+
+void CustomApplication::PrintNeighbors ()
+{
+    std::cout << "Neighbor Info for Node: " << GetNode()->GetId() << std::endl;
+    for (std::vector<NeighborInformation>::iterator it = m_neighbors.begin(); it != m_neighbors.end(); it++ )
+    {
+        std::cout << "\tMAC: " << it->neighbor_mac << "\tLast Contact: " << it->last_beacon << std::endl;
+    }
+}
+
+void CustomApplication::RemoveOldNeighbors ()
+{
+    //Go over the list of neighbors
+    for (std::vector<NeighborInformation>::iterator it = m_neighbors.begin(); it != m_neighbors.end(); it++ )
+    {
+        //Get the time passed since the last time we heard from a node
+        Time last_contact = Now () - it->last_beacon;
+
+        if (last_contact >= Seconds (5)) //if it has been more than 5 seconds, we will remove it. You can change this to whatever value you want.
+        {
+            std::cout <<Now () << " Node " << GetNode()->GetId() <<  " is removing old neighbor " << it->neighbor_mac << std::endl;
+            //Remove an old entry from the table
+            m_neighbors.erase (it);
+            break;
+        }    
+    }
+    //Check the list again after 1 second.
+    Simulator::Schedule (Seconds (1), &CustomApplication::RemoveOldNeighbors, this);
+
+}
+
 }//end of ns3
 

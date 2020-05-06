@@ -4,6 +4,11 @@
 #include "custom-application.h"
 #include "custom-data-tag.h"
 
+#define RED_CODE "\033[91m"
+#define GREEN_CODE "\033[32m"
+#define END_CODE "\033[0m"
+
+
 namespace ns3
 {
   NS_LOG_COMPONENT_DEFINE("CustomApplication");
@@ -33,6 +38,7 @@ CustomApplication::CustomApplication()
     m_broadcast_time = MilliSeconds (100); //every 100ms
     m_packetSize = 1000; //1000 bytes
     m_time_limit = Seconds (5);
+    m_mode = WifiMode("OfdmRate6MbpsBW10MHz");
 }
 CustomApplication::~CustomApplication()
 {
@@ -85,6 +91,12 @@ CustomApplication::SetBroadcastInterval (Time interval)
     m_broadcast_time = interval;
 }
 void
+CustomApplication::SetWifiMode (WifiMode mode)
+{
+    m_mode = mode;
+}
+
+void
 CustomApplication::BroadcastInformation()
 {
     NS_LOG_FUNCTION (this);
@@ -93,7 +105,7 @@ CustomApplication::BroadcastInformation()
     tx.channelNumber = CCH; 
     tx.priority = 7; //highest priority.
     tx.txPowerLevel = 7;
-    tx.dataRate = WifiMode("OfdmRate6MbpsBW10MHz");
+    tx.dataRate = m_mode;
     
     Ptr<Packet> packet = Create <Packet> (m_packetSize);
     
@@ -141,8 +153,10 @@ CustomApplication::PromiscRx (Ptr<const Packet> packet, uint16_t channelFreq, Wi
         Packets received here have MAC headers and payload.
         If packets are created with 1000 bytes payload, the size here is about 38 bytes larger. 
     */
-    NS_LOG_DEBUG ("PromiscRx() : Node " << GetNode()->GetId() << " : ChannelFreq: " << channelFreq << " Mode: " << tx.GetMode()
-                 << " Signal: " << sn.signal << " Noise: " << sn.noise << " Size: " << packet->GetSize());    
+    NS_LOG_DEBUG (Now () << " PromiscRx() : Node " << GetNode()->GetId() << " : ChannelFreq: " << channelFreq << " Mode: " << tx.GetMode()
+                 << " Signal: " << sn.signal << " Noise: " << sn.noise << " Size: " << packet->GetSize()
+                 << " Mode " << tx.GetMode ()
+                 );    
     WifiMacHeader hdr;
     if (packet->PeekHeader (hdr))
     {
@@ -181,6 +195,7 @@ void CustomApplication::UpdateNeighbor (Mac48Address addr)
     }
     if (!found) //If no node with this address exist, add a new table entry
     {
+        NS_LOG_INFO ( GREEN_CODE << Now() << " : Node " << GetNode()->GetId() << " is adding a neighbor with MAC="<<addr << END_CODE);
         NeighborInformation new_n;
         new_n.neighbor_mac = addr;
         new_n.last_beacon = Now ();
@@ -207,7 +222,7 @@ void CustomApplication::RemoveOldNeighbors ()
 
         if (last_contact >= Seconds (5)) //if it has been more than 5 seconds, we will remove it. You can change this to whatever value you want.
         {
-            std::cout <<Now () << " Node " << GetNode()->GetId() <<  " is removing old neighbor " << it->neighbor_mac << std::endl;
+            NS_LOG_INFO (RED_CODE << Now () << " Node " << GetNode()->GetId()<<" is removing old neighbor " << it->neighbor_mac <<END_CODE);
             //Remove an old entry from the table
             m_neighbors.erase (it);
             break;

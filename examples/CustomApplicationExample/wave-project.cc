@@ -9,6 +9,17 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("CustomApplicationExample");
 
+void SomeEvent ()
+{
+  for (uint32_t i=0 ; i<NodeList::GetNNodes(); i++)
+  {
+    Ptr<Node> n = NodeList::GetNode(i);
+    Ptr<CustomApplication> c_app = DynamicCast <CustomApplication> (n->GetApplication(0));
+    c_app->SetWifiMode (WifiMode("OfdmRate3MbpsBW10MHz"));
+  }
+    std::cout << "******************" <<std::endl;
+}
+
 int main (int argc, char *argv[])
 {
   CommandLine cmd;
@@ -16,7 +27,7 @@ int main (int argc, char *argv[])
   //Number of nodes
   uint32_t nNodes = 5;
   double simTime = 60; //4 seconds
-  double interval = 0.1;
+  double interval = 0.5;
   bool enablePcap = false;
   cmd.AddValue ("t","Simulation Time", simTime);
   cmd.AddValue ("i", "Broadcast interval in seconds", interval);
@@ -66,22 +77,25 @@ int main (int argc, char *argv[])
   {
     ObjectFactory fact;
     fact.SetTypeId ("ns3::CustomApplication");
-    fact.Set ("Interval", TimeValue (MilliSeconds(100)));
+    fact.Set ("Interval", TimeValue (Seconds(interval)));
     Ptr<CustomApplication> appI = fact.Create <CustomApplication> ();
     appI->SetStartTime(Seconds(0));
     appI->SetStopTime (Seconds (0));
     nodes.Get(i)->AddApplication(appI);
   }
-   
+
+  Simulator::Schedule (Seconds (30), &SomeEvent);
 
   Simulator::Stop(Seconds(simTime));
   Simulator::Run();
   std::cout << "Post Simulation: " << std::endl;
+  
   for (uint32_t i=0 ; i<nodes.GetN(); i++)
   {
     Ptr<CustomApplication> appI = DynamicCast<CustomApplication> (nodes.Get(i)->GetApplication(0));
     appI->PrintNeighbors ();
   }
+
 
   Simulator::Destroy();
 

@@ -45,6 +45,10 @@ namespace ns3
             /** \brief Print a list of neighbors
              */
             void PrintNeighbors ();
+            
+            /** \brief Change the data rate used for broadcasts.
+             */ 
+            void SetWifiMode (WifiMode mode);
 
             /** \brief Remove neighbors you haven't heard from after some time.
              */
@@ -64,6 +68,7 @@ namespace ns3
 
             Time m_time_limit; /**< Time limit to keep neighbors in a list */
             
+            WifiMode m_mode; /**< data rate used for broadcasts */
             //You can define more stuff to record statistics, etc.
     };
 }

@@ -1,4 +1,4 @@
-#include "../SUMOTraceExample/ns2-node-utility.h"
+#include "ns2-node-utility.h"
 
 #include <regex>
 

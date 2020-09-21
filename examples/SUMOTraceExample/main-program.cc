@@ -41,7 +41,6 @@ int main (int argc, char *argv[])
       app->SetStopTime (Seconds (ns2_utility.GetExitTimeForNode(i)));
       n->AddApplication(app);
     }
-
   std::cout << "Applications setup done!" << std::endl;
   Simulator::Stop(Seconds (sim_time)); //because this is the last timestamp in your ns-2 trace
   Simulator::Run ();

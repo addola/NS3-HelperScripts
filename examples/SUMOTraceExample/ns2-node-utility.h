@@ -5,8 +5,8 @@
  *      Author: addola
  */
 
-#ifndef NS_3_30_1_NS2_NODE_UTILITY_H_
-#define NS_3_30_1_NS2_NODE_UTILITY_H_
+#ifndef SUMOTRACEEXAMPLE_NS2_NODE_UTILITY_H_
+#define SUMOTRACEEXAMPLE_NS2_NODE_UTILITY_H_
 
 #include <iostream>
 #include <sstream>

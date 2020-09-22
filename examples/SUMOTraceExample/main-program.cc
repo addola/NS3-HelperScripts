@@ -1,5 +1,5 @@
-#include "../SUMOTraceExample/custom-application.h"
-#include "../SUMOTraceExample/wave-setup.h"
+#include "custom-application.h"
+#include "wave-setup.h"
 #include "ns3/network-module.h"
 #include "ns3/core-module.h"
 #include "ns3/mobility-module.h"
@@ -33,13 +33,17 @@ int main (int argc, char *argv[])
 
   std::cout << "NS2 mobility & devices configured..." << std::endl;
   //Let's install my CustomApplication to all nodes and start them at the appropriate time using my utilitiy.
+  ApplicationContainer apps;
   for (uint32_t i=0 ; i<nnodes; i++)
     {
       Ptr<Node> n = nodes.Get(i);
       Ptr<CustomApplication> app = CreateObject <CustomApplication>  ();
+      //app->SetStartTime (Seconds (0));
+      //app->SetStopTime (Seconds (sim_time));
       app->SetStartTime(Seconds (ns2_utility.GetEntryTimeForNode(i)));
       app->SetStopTime (Seconds (ns2_utility.GetExitTimeForNode(i)));
       n->AddApplication(app);
+
     }
   std::cout << "Applications setup done!" << std::endl;
   Simulator::Stop(Seconds (sim_time)); //because this is the last timestamp in your ns-2 trace

@@ -1,5 +1,5 @@
-#ifndef WAVETEST_CUSTOM_APPLICATION_H
-#define WAVETEST_CUSTOM_APPLICATION_H
+#ifndef SUMOTRACEEXAMPLE_CUSTOM_APPLICATION_H
+#define SUMOTRACEEXAMPLE_CUSTOM_APPLICATION_H
 #include "ns3/application.h"
 #include "ns3/wave-net-device.h"
 #include "ns3/wifi-phy.h"

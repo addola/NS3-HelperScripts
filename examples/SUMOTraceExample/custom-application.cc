@@ -1,6 +1,5 @@
-#include "../SUMOTraceExample/custom-application.h"
-
-#include "../SUMOTraceExample/custom-data-tag.h"
+#include "custom-application.h"
+#include "custom-data-tag.h"
 #include "ns3/mobility-model.h"
 #include "ns3/log.h"
 #include "ns3/simulator.h"
@@ -36,6 +35,7 @@ TypeId CustomApplication::GetInstanceTypeId() const
 
 CustomApplication::CustomApplication()
 {
+  NS_LOG_FUNCTION (this);
     m_broadcast_time = MilliSeconds (100); //every 100ms
     m_packetSize = 1000; //1000 bytes
     m_time_limit = Seconds (5);
@@ -49,6 +49,8 @@ void
 CustomApplication::StartApplication()
 {
     NS_LOG_FUNCTION (this);
+    std::cout << "Application at node " << GetNode()->GetId() << std::endl;
+
     //Set A Receive callback
     Ptr<Node> n = GetNode ();
     for (uint32_t i = 0; i < n->GetNDevices (); i++)
@@ -134,18 +136,18 @@ CustomApplication::BroadcastInformation()
 void
 CustomApplication::MonitorTx (const Ptr< const Packet > packet, uint16_t channelFreqMhz, WifiTxVector txVector, MpduInfo aMpdu)
 {
-  NS_LOG_DEBUG (GREEN_CODE << ">>>> Node " << GetNode()->GetId() << " transmitting : " << channelFreqMhz << END_CODE);
+  NS_LOG_DEBUG (Now().GetSeconds() << GREEN_CODE << " >>>> Node " << GetNode()->GetId() << " transmitting : " << channelFreqMhz << END_CODE);
 }
 
 void
 CustomApplication::PhyRxDropTrace(Ptr<const Packet> packet, WifiPhyRxfailureReason reason)
 {
-  NS_LOG_DEBUG (RED_CODE << "Node " << GetNode()->GetId() << " RxDrop. " << END_CODE << "Reason: " << reason);
+  NS_LOG_DEBUG (Now().GetSeconds() << RED_CODE << " Node " << GetNode()->GetId() << " RxDrop. " << END_CODE << "Reason: " << reason);
 }
 void
 CustomApplication::PhyTxDropTrace(Ptr<const Packet> packet)
 {
-  NS_LOG_DEBUG (RED_CODE << "Node " << GetNode()->GetId() << " TxDrop. " << END_CODE);
+  NS_LOG_DEBUG (Now().GetSeconds() << RED_CODE << " Node " << GetNode()->GetId() << " TxDrop. " << END_CODE);
 }
 
 bool

@@ -158,7 +158,7 @@ int main (int argc, char *argv[])
 
   //We can also set the transmission parameters at the higher layeres
   TxInfo tx;
-
+  tx.preamble = WIFI_PREAMBLE_LONG;
   //We set the channel on which the packet is sent. The WaveNetDevice must have access to the channel
   //CCH is enabled by default.
   tx.channelNumber = CCH;
@@ -188,7 +188,6 @@ int main (int argc, char *argv[])
    * A value of 8 indicates application don't want to set power or data rate. Values >8 are invalid.
    */
   tx.txPowerLevel = 3; //When we define TxPowerStart & TxPowerEnd for a WifiPhy, 7 is correspond to TxPowerEnd, and 1 TxPowerStart, and numbers in between are levels.
-  //tx.preamble = WIFI_PREAMBLE_LONG;
 
   /*************** Sending a packet ***************/
 
@@ -221,6 +220,7 @@ int main (int argc, char *argv[])
 		  Ptr <Packet> low_priority_packet = Create <Packet> (250); // A low priority packet
 
 		  TxInfo txi;
+      txi.preamble = WIFI_PREAMBLE_LONG;
 		  txi.channelNumber = CCH;
 		  //We always need to set TxPower to something. Otherwise, default data rate would be used.
 		  txi.txPowerLevel = 3;

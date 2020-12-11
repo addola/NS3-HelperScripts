@@ -104,6 +104,7 @@ CustomApplication::BroadcastInformation()
     //Setup transmission parameters
     TxInfo tx;
     tx.channelNumber = CCH; 
+    tx.preamble = WIFI_PREAMBLE_LONG;
     tx.priority = 7; //highest priority.
     tx.txPowerLevel = 7;
     tx.dataRate = m_mode;

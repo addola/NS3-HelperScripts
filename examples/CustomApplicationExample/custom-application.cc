@@ -148,7 +148,7 @@ CustomApplication::ReceivePacket (Ptr<NetDevice> device, Ptr<const Packet> packe
     return true;
 }
 void 
-CustomApplication::PromiscRx (Ptr<const Packet> packet, uint16_t channelFreq, WifiTxVector tx, MpduInfo mpdu, SignalNoiseDbm sn)
+CustomApplication::PromiscRx (Ptr<const Packet> packet, uint16_t channelFreq, WifiTxVector tx, MpduInfo mpdu, SignalNoiseDbm sn, uint16_t sta_id)
 {
     //This is a promiscous trace. It will pick broadcast packets, and packets not directed to this node's MAC address.
     /*

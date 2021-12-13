@@ -49,7 +49,7 @@ void
 CustomApplication::StartApplication()
 {
     NS_LOG_FUNCTION (this);
-    std::cout << "Application at node " << GetNode()->GetId() << std::endl;
+    std::cout << "Application at node " << GetNode()->GetId() << " has started!" << std::endl;
 
     //Set A Receive callback
     Ptr<Node> n = GetNode ();
@@ -134,7 +134,7 @@ CustomApplication::BroadcastInformation()
 }
 
 void
-CustomApplication::MonitorTx (const Ptr< const Packet > packet, uint16_t channelFreqMhz, WifiTxVector txVector, MpduInfo aMpdu)
+CustomApplication::MonitorTx (const Ptr< const Packet > packet, uint16_t channelFreqMhz, WifiTxVector txVector, MpduInfo aMpdu, uint16_t sta_id)
 {
   NS_LOG_DEBUG (Now().GetSeconds() << GREEN_CODE << " >>>> Node " << GetNode()->GetId() << " transmitting : " << channelFreqMhz << END_CODE);
 }
@@ -171,7 +171,7 @@ CustomApplication::ReceivePacket (Ptr<NetDevice> device, Ptr<const Packet> packe
     return true;
 }
 void 
-CustomApplication::PromiscRx (Ptr<const Packet> packet, uint16_t channelFreq, WifiTxVector tx, MpduInfo mpdu, SignalNoiseDbm sn)
+CustomApplication::PromiscRx (Ptr<const Packet> packet, uint16_t channelFreq, WifiTxVector tx, MpduInfo mpdu, SignalNoiseDbm sn, uint16_t sta_id)
 {
     //This is a promiscous trace. It will pick broadcast packets, and packets not directed to this node's MAC address.
     /*
